@@ -8,6 +8,11 @@ function Product(name, color, category, price, quantity) {
  this.quantity = quantity;
 }
 
+Product.prototype.getPrice = function() {
+  return this.price;
+};
+
+
 Product.prototype.decreaseStock = function() {
   this.quantity--;
 };

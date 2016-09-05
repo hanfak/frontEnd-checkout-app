@@ -25,6 +25,13 @@ describe("Product", function() {
     expect(product.quantity).toEqual(5);
   });
 
+  describe('#getPrice', function(){
+    it('returns the price of product', function() {
+      expect(product.getPrice()).toEqual("99.00");
+    });
+  });
+
+
   describe('#decreaseStock', function(){
     it('decreases the amount of product has in stock', function() {
       product.decreaseStock();

@@ -28,3 +28,13 @@ Shop.prototype.removeFromCart = function(product) {
     throw new Error('Product not in cart');
   }
 };
+
+Shop.prototype.totalOfCart = function() {
+  var sum = this.showCart().reduce(addPrice, 0);
+
+  function addPrice(a , b) {
+    return a +  parseFloat(b.getPrice());
+  }
+
+  return sum.toFixed(2);
+};

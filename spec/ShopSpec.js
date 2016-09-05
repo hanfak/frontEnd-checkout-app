@@ -1,11 +1,14 @@
 describe("Shop", function() {
-  var shop, stockList, product1, product2, products;
+  var shop, stockList, product1, product2, product3, products;
 
   beforeEach(function() {
-    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock']);
-    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock']);
-    products = [product1, product2];
-
+    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice']);
+    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice']);
+      product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice']);
+    products = [product1, product2, product3];
+    product1.getPrice.and.returnValue("99.00");
+    product2.getPrice.and.returnValue("39.99");
+    product3.getPrice.and.returnValue("175.50");
     stockList = jasmine.createSpyObj('stockList', ['createProducts', 'getStock']);
     stockList.createProducts.and.returnValue(products);
     stockList.getStock.and.returnValue(products);
@@ -80,6 +83,34 @@ describe("Shop", function() {
       shop.removeFromCart(product1);
 
       expect(shop.showCart()).toEqual([product2]);
+    });
+  });
+
+  describe("#totalOfCart",function(){
+    it('returns the total of empty cart as £0.00', function(){
+      expect(shop.totalOfCart()).toEqual('0.00');
+    });
+
+    it('returns the total of one item in cart', function(){
+      shop.addToCart(product1);
+
+      expect(shop.totalOfCart()).toEqual('99.00');
+    });
+
+    it('returns the total of multiple items in cart', function(){
+      shop.addToCart(product1);
+      shop.addToCart(product2);
+      shop.addToCart(product1);
+      expect(shop.totalOfCart()).toEqual('237.99');
+    });
+
+    it('returns correct total after adding and remove products to cart', function(){
+      shop.addToCart(product1);
+      shop.addToCart(product2);
+      shop.removeFromCart(product1);
+      shop.addToCart(product3);
+
+      expect(shop.totalOfCart()).toEqual('215.49');
     });
   });
 });

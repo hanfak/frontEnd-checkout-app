@@ -1,26 +1,26 @@
 var shop = new Shop(new StockList());
 
 document.addEventListener("DOMContentLoaded", function() {
-  printStockList();
+  _printStockAndCartItems();
 });
-
-function printStockList(){
-  _printStockItems();
-}
 
 function addProduct(index) {
   _clearProductsAndCart();
   product = shop.showStock()[index];
   shop.addToCart(product);
-  printStockList();
-  _printShoppingCartItems();
+  _printStockAndCartItems();
 }
 
 function removeProduct(index) {
   _clearProductsAndCart();
   product = shop.showCart()[index];
   shop.removeFromCart(product);
-  printStockList();
+  _printStockAndCartItems();
+}
+
+// Private methods
+function _printStockAndCartItems(){
+  _printStockItems();
   _printShoppingCartItems();
 }
 

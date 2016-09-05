@@ -5,29 +5,23 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function printStockList(){
-  shop.showStock().forEach(function(product, index){
-    return document.getElementById("stock-list").innerHTML +=
-      "<div class='item'>" +
-          _productDetails(product) +
-          _addProductToCartButton(index) +
-      '</div>';
-  });
+  _printStockItems();
 }
 
 function addProduct(index) {
   _clearProductsAndCart();
-
   product = shop.showStock()[index];
   shop.addToCart(product);
   printStockList();
+  _printShoppingCartItems();
+}
 
-  document.getElementById("shopping-cart").innerHTML += '<h1>SHOPPING CART</h1>';
-
-  shop.showCart().forEach(function(product, index){
-    return document.getElementById("shopping-cart").innerHTML +=
-      "<div class='item'>" + _productDetails(product) +
-      '</div>';
-  });
+function removeProduct(index) {
+  _clearProductsAndCart();
+  product = shop.showCart()[index];
+  shop.removeFromCart(product);
+  printStockList();
+  _printShoppingCartItems();
 }
 
 function _productDetails(product){
@@ -40,6 +34,37 @@ function _productDetails(product){
 
 function _addProductToCartButton(index) {
   return '<input class="add-btn" type="button" onclick="addProduct('+index+')" value="ADD PRODUCT"></input>';
+}
+
+function _removeProductFromCartButton(index) {
+  return '<input class="remove-btn" type="button"  onclick="removeProduct('+index+')" value="REMOVE PRODUCT"></input>';
+}
+
+function _shoppingCartHeading(){
+  if(shop.showCart().length > 0){
+    return document.getElementById("shopping-cart").innerHTML += '<h1>SHOPPING CART</h1>';
+  }
+}
+
+function _printStockItems() {
+  shop.showStock().forEach(function(product, index){
+    return document.getElementById("stock-list").innerHTML +=
+      "<div class='item'>" +
+          _productDetails(product) +
+          _addProductToCartButton(index) +
+      '</div>';
+  });
+}
+
+function _printShoppingCartItems() {
+  _shoppingCartHeading();
+  shop.showCart().forEach(function(product, index){
+    return document.getElementById("shopping-cart").innerHTML +=
+    "<div class='item'>"                  +
+      _productDetails(product)            +
+      _removeProductFromCartButton(index) +
+     '</div>';
+  });
 }
 
 function _clearProductsAndCart() {

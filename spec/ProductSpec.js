@@ -31,4 +31,11 @@ describe("Product", function() {
       expect(product.quantity).toEqual(4);
     });
   });
+
+  describe('#increaseStock', function(){
+    it('decreases the amount of product has in stock', function() {
+      product.increaseStock();
+      expect(product.quantity).toEqual(6);
+    });
+  });
 });

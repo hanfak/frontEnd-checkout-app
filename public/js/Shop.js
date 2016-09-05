@@ -18,3 +18,13 @@ Shop.prototype.addToCart = function(product) {
   product.decreaseStock();
   this.cart.push(product);
 };
+
+Shop.prototype.removeFromCart = function(product) {
+  var index = this.cart.indexOf(product);
+  if (index > -1) {
+    this.cart.splice(index, 1);
+    product.increaseStock();
+  } else {
+    throw new Error('Product not in cart');
+  }
+};

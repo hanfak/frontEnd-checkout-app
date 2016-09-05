@@ -11,3 +11,7 @@ function Product(name, color, category, price, quantity) {
 Product.prototype.decreaseStock = function() {
   this.quantity--;
 };
+
+Product.prototype.increaseStock = function() {
+  this.quantity++;
+};

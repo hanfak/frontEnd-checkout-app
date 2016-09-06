@@ -20,6 +20,11 @@ Product.prototype.getCategory = function() {
   return this.category;
 };
 
+Product.prototype.getQuantity = function() {
+  return this.quantity;
+};
+
+
 Product.prototype.decreaseStock = function() {
   this.quantity--;
 };

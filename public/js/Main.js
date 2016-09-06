@@ -14,7 +14,14 @@ function addProduct(index) {
 function addVoucher(index) {
   _clearProductsAndCart();
   voucher = shop.showVouchers()[index];
-  shop.applyVoucherAndAddToCart(voucher);
+  try{
+    shop.applyVoucherAndAddToCart(voucher);
+  }
+  catch(error) {
+    document.getElementById("error").innerHTML = error;
+    setTimeout(function(){
+      document.getElementById("error").innerHTML = '';},6000);
+  }
   _printItemsVouchersAndTotal();
 }
 

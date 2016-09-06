@@ -35,14 +35,34 @@ Shop.prototype.removeFromCart = function(product) {
 };
 
 Shop.prototype.applyVoucherAndAddToCart = function(voucher) {
+  if(this.showCart().length === 0){
+    throw new Error('No product in cart: Add a product first');
+  }
+
+  if(this._voucherHasBeenUsed()){
+    throw new Error('Voucher has already been used - Can only apply one voucher at a time: Cannot apply voucher');
+  }
+
   if(this._checkforVoucher1(voucher)) {
     this.addToCart(voucher);
   }
-  if(this._checkforVoucher2(voucher)) {
-    this.addToCart(voucher);
+
+  if(voucher.getName() === 'voucher2') {
+    if(this._checkforVoucher2()){
+      this.addToCart(voucher);
+    }
+    else {
+      throw new Error('Total of cart is under £50.00: Cannot apply voucher');
+    }
   }
-  if(this._checkforVoucher3(voucher)) {
-    this.addToCart(voucher);
+
+  if(voucher.getName() === 'voucher3') {
+    if(this._checkforVoucher3()){
+      this.addToCart(voucher);
+    }
+    else {
+      throw new Error('Total of cart is under £75.00 and/or contains no footwear: Cannot apply voucher');
+    }
   }
 };
 
@@ -52,6 +72,13 @@ Shop.prototype.totalOfCart = function() {
 };
 
 //PRIVATE METHODS
+
+Shop.prototype._voucherHasBeenUsed = function(a, b) {
+  var result = this.showVouchers().filter(function(product){
+    return product.getQuantity() === 0;
+  });
+  return result.length > 0;
+};
 
 Shop.prototype._addPrice = function(a, b) {
   return  a +  parseFloat(b.getPrice());
@@ -72,9 +99,9 @@ Shop.prototype._checkforVoucher1 = function(voucher) {
 };
 
 Shop.prototype._checkforVoucher2 = function(voucher) {
-  return voucher.getName() === 'voucher2' && parseFloat(this.totalOfCart()) > 50.0;
+  return parseFloat(this.totalOfCart()) > 50.0;
 };
 
 Shop.prototype._checkforVoucher3 = function(voucher) {
-  return voucher.getName() === 'voucher3' && parseFloat(this.totalOfCart()) > 75.0 && this._checkShoes();
+  return  parseFloat(this.totalOfCart()) > 75.0 && this._checkShoes();
 };

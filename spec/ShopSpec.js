@@ -21,15 +21,18 @@ describe("Shop", function() {
     stockList.getStock.and.returnValue(products);
 
     promoRules = jasmine.createSpyObj('promoRules', ['getVouchers']);
-    voucher1 = jasmine.createSpyObj('voucher1', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
-    voucher2 = jasmine.createSpyObj('voucher2', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
-    voucher3 = jasmine.createSpyObj('voucher3', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
+    voucher1 = jasmine.createSpyObj('voucher1', ['decreaseStock', 'increaseStock', 'getPrice', 'getName', 'getQuantity']);
+    voucher2 = jasmine.createSpyObj('voucher2', ['decreaseStock', 'increaseStock', 'getPrice', 'getName', 'getQuantity']);
+    voucher3 = jasmine.createSpyObj('voucher3', ['decreaseStock', 'increaseStock', 'getPrice', 'getName', 'getQuantity']);
     voucher1.getPrice.and.returnValue("-5.00");
     voucher1.getName.and.returnValue("voucher1");
+    voucher1.getQuantity.and.returnValue(1);
     voucher2.getPrice.and.returnValue("-10.00");
     voucher2.getName.and.returnValue("voucher2");
+    voucher2.getQuantity.and.returnValue(1);
     voucher3.getPrice.and.returnValue("-15.00");
     voucher3.getName.and.returnValue("voucher3");
+    voucher3.getQuantity.and.returnValue(1);
 
     promoRules.getVouchers.and.returnValue([voucher1, voucher2, voucher3]);
 
@@ -178,12 +181,23 @@ describe("Shop", function() {
 
       it('does not apply', function(){
         shop.addToCart(product4);
-        shop.applyVoucherAndAddToCart(voucher2);
+        try{
+          shop.applyVoucherAndAddToCart(voucher2);
+        }
+        catch(e) {
+          expect(shop.totalOfCart()).toEqual('19.00');
+        }
+      });
 
-        expect(shop.totalOfCart()).toEqual('19.00');
+      it('returns error if under £50', function(){
+        shop.addToCart(product4);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher2);
+        };
+
+        expect(result).toThrowError('Total of cart is under £50.00: Cannot apply voucher');
       });
     });
-
 
     describe("voucher3", function(){
       it('returns correct total', function(){
@@ -193,28 +207,114 @@ describe("Shop", function() {
         expect(shop.totalOfCart()).toEqual('84.00');
       });
 
-      it('deos not apply if under £75 and shoes included', function(){
+      it('returns error if under £75 and shoes included', function(){
         shop.addToCart(product4);
-        shop.applyVoucherAndAddToCart(voucher3);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher3);
+        };
 
-        expect(shop.totalOfCart()).toEqual('19.00');
+        expect(result).toThrowError('Total of cart is under £75.00 and/or contains no footwear: Cannot apply voucher');
+
       });
 
       it('deos not apply if over £75 and no shoes included', function(){
         shop.addToCart(product3);
-        shop.applyVoucherAndAddToCart(voucher3);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher3);
+        };
 
-        expect(shop.totalOfCart()).toEqual('175.50');
+        expect(result).toThrowError('Total of cart is under £75.00 and/or contains no footwear: Cannot apply voucher');
       });
 
       it('deos not apply if no shoes and under £75', function(){
         shop.addToCart(product4);
         shop.addToCart(product2);
-        shop.applyVoucherAndAddToCart(voucher3);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher3);
+        };
 
-        expect(shop.totalOfCart()).toEqual('58.99');
+        expect(result).toThrowError('Total of cart is under £75.00 and/or contains no footwear: Cannot apply voucher');
+      });
+
+      it('deos not apply if under £75 and shoes included', function(){
+        shop.addToCart(product4);
+        try{
+          shop.applyVoucherAndAddToCart(voucher3);
+        }
+        catch(e) {
+          expect(shop.totalOfCart()).toEqual('19.00');
+        }
+
+      });
+
+      it('deos not apply if over £75 and no shoes included', function(){
+        shop.addToCart(product3);
+        try{
+          shop.applyVoucherAndAddToCart(voucher3);
+        }
+        catch(e){
+          expect(shop.totalOfCart()).toEqual('175.50');
+        }
+      });
+
+      it('deos not apply if no shoes and under £75', function(){
+        shop.addToCart(product4);
+        shop.addToCart(product2);
+        try{
+          shop.applyVoucherAndAddToCart(voucher3);
+        }
+        catch(e){
+          expect(shop.totalOfCart()).toEqual('58.99');
+        }
       });
     });
+
+    describe('voucher used', function(){
+      it('returns error for same voucher', function(){
+        shop.addToCart(product1);
+        shop.applyVoucherAndAddToCart(voucher1);
+        voucher1.getQuantity.and.returnValue(0);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher1);
+        };
+
+        expect(result).toThrowError('Voucher has already been used - Can only apply one voucher at a time: Cannot apply voucher');
+      });
+
+      it('returns error for different voucher', function(){
+        shop.addToCart(product1);
+        shop.applyVoucherAndAddToCart(voucher1);
+        voucher1.getQuantity.and.returnValue(0);
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher2);
+        };
+
+        expect(result).toThrowError('Voucher has already been used - Can only apply one voucher at a time: Cannot apply voucher');
+      });
+    });
+
+    describe('no products in cart', function(){
+      it('returns error', function(){
+        result = function(){
+          shop.applyVoucherAndAddToCart(voucher1);
+        };
+
+        expect(result).toThrowError('No product in cart: Add a product first');
+      });
+
+
+      it('does not add voucher to cart', function(){
+                try {
+          shop.applyVoucherAndAddToCart(voucher1);
+        }
+        catch(e){
+          expect(shop.showCart()).toEqual([]);
+        }
+
+      });
+    });
+
+  
 
   });
 });

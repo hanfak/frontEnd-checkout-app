@@ -71,14 +71,20 @@ function _addVoucherToCartButton(index) {
 }
 
 function _displayVouchers(){
-  shop.showVouchers().forEach(function(product, index){
-    return document.getElementById("vouchers").innerHTML +=
+  if(shop.voucherHasBeenUsed()){
+    return document.getElementById("vouchers").innerHTML += '';
+  }
+  else {
+    shop.showVouchers().forEach(function(product, index){
+      return document.getElementById("vouchers").innerHTML +=
       "<div class='voucher'>" +
       '<p>Name:'            + product.name     +'</p>' +
       '<p>£'                + product.price * -1   +'</p>' +
-        _addVoucherToCartButton(index) +
+      _addVoucherToCartButton(index) +
       '</div>';
-  });
+    });
+
+  }
 }
 
 function _totalOfCart() {

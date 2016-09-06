@@ -74,6 +74,16 @@ describe("Shop", function() {
     });
   });
 
+  describe("#voucherHasBeenUsed",function(){
+    it('returns true if a voucher is in cart', function(){
+      shop.addToCart(product1);
+      shop.applyVoucherAndAddToCart(voucher1);
+      voucher1.getQuantity.and.returnValue(0);
+
+      expect(shop.voucherHasBeenUsed()).toEqual(true);
+    });
+  });
+
   describe("#addToCart",function(){
     it("calls decreaseStock", function() {
       shop.addToCart(product1);
@@ -314,7 +324,7 @@ describe("Shop", function() {
       });
     });
 
-  
+
 
   });
 });

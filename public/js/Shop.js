@@ -39,7 +39,7 @@ Shop.prototype.applyVoucherAndAddToCart = function(voucher) {
     throw new Error('No product in cart: Add a product first');
   }
 
-  if(this._voucherHasBeenUsed()){
+  if(this.voucherHasBeenUsed()){
     throw new Error('Voucher has already been used - Can only apply one voucher at a time: Cannot apply voucher');
   }
 
@@ -71,14 +71,15 @@ Shop.prototype.totalOfCart = function() {
   return sum.toFixed(2);
 };
 
-//PRIVATE METHODS
-
-Shop.prototype._voucherHasBeenUsed = function(a, b) {
+Shop.prototype.voucherHasBeenUsed = function() {
   var result = this.showVouchers().filter(function(product){
     return product.getQuantity() === 0;
   });
   return result.length > 0;
 };
+
+//PRIVATE METHODS
+
 
 Shop.prototype._addPrice = function(a, b) {
   return  a +  parseFloat(b.getPrice());

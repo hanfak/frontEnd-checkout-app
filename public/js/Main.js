@@ -1,4 +1,4 @@
-var shop = new Shop(new StockList());
+var shop = new Shop(new StockList(), new PromoRules());
 
 document.addEventListener("DOMContentLoaded", function() {
   _printItemsAndTotal();
@@ -8,6 +8,13 @@ function addProduct(index) {
   _clearProductsAndCart();
   product = shop.showStock()[index];
   shop.addToCart(product);
+  _printItemsAndTotal();
+}
+
+function addVoucher(index) {
+  _clearProductsAndCart();
+  product = shop.showVouchers()[index];
+  shop.applyVoucherAndAddToCart(product);
   _printItemsAndTotal();
 }
 
@@ -51,8 +58,24 @@ function _printStockItems() {
   });
 }
 
+function _addVoucherToCartButton(index) {
+  return '<input class="add-btn" type="button" onclick="addVoucher('+index+')" value="ADD VOUCHER"></input>';
+}
+
+function _displayVouchers(){
+  shop.showVouchers().forEach(function(product, index){
+    return document.getElementById("vouchers").innerHTML +=
+      "<div class='voucher'>" +
+      '<p>Name:'            + product.name     +'</p>' +
+      '<p>£'                + product.price * -1   +'</p>' +
+        _addVoucherToCartButton(index) +
+      '</div>';
+  });
+}
+
 function _totalOfCart() {
   if(shop.showCart().length > 0){
+    _displayVouchers();
     return document.getElementById("total").innerHTML +=
       '<h1>TOTAL</h1>' +
       '<p>£' + shop.totalOfCart() + '</p>';
@@ -80,4 +103,5 @@ function _clearProductsAndCart() {
   document.getElementById("stock-list").innerHTML = "";
   document.getElementById("shopping-cart").innerHTML = "";
   document.getElementById("total").innerHTML = "";
+  document.getElementById("vouchers").innerHTML = "";
 }

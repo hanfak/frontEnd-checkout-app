@@ -2,13 +2,15 @@ describe("Shop", function() {
   var shop, stockList, product1, product2, product3, products;
 
   beforeEach(function() {
+    // addd getCategory method
     product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice']);
     product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice']);
-      product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice']);
+    product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice']);
     products = [product1, product2, product3];
     product1.getPrice.and.returnValue("99.00");
     product2.getPrice.and.returnValue("39.99");
     product3.getPrice.and.returnValue("175.50");
+
     stockList = jasmine.createSpyObj('stockList', ['createProducts', 'getStock']);
     stockList.createProducts.and.returnValue(products);
     stockList.getStock.and.returnValue(products);
@@ -36,6 +38,12 @@ describe("Shop", function() {
     it("has no products in cart at start", function() {
       expect(shop.showStock()).toEqual(products);
     });
+  });
+
+  describe("#showVouchers",function(){
+    // calls getVouchers()
+
+    // returns list of vouchers as products
   });
 
   describe("#addToCart",function(){
@@ -112,5 +120,17 @@ describe("Shop", function() {
 
       expect(shop.totalOfCart()).toEqual('215.49');
     });
+
+    // test voucher 1 works
+    // test voucehr 2 works
+    // test voucher 3 works
+    // test multiple vouchers are discounted
+
+  });
+
+  descritbe("#applyVoucher", function(){
+    // test voucher is stored in cart
+
+    // test multiple vouchers are stored in cart
   });
 });

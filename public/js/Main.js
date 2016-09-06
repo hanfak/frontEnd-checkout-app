@@ -7,7 +7,14 @@ document.addEventListener("DOMContentLoaded", function() {
 function addProduct(index) {
   _clearProductsAndCart();
   product = shop.showStock()[index];
+  try{
   shop.addToCart(product);
+  } 
+  catch(error) {
+    document.getElementById("error").innerHTML = error;
+    setTimeout(function(){
+      document.getElementById("error").innerHTML = '';},6000);
+  }
   _printItemsVouchersAndTotal();
 }
 

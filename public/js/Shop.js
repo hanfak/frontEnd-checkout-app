@@ -20,8 +20,12 @@ Shop.prototype.showVouchers= function() {
 };
 
 Shop.prototype.addToCart = function(product) {
-  product.decreaseStock();
-  this.cart.push(product);
+  if(product.getQuantity() > 0){
+    product.decreaseStock();
+    this.cart.push(product);
+  } else {
+    throw new Error('Cannot add to cart: Product is out of stock');
+  }
 };
 
 Shop.prototype.removeFromCart = function(product) {
@@ -72,8 +76,8 @@ Shop.prototype.totalOfCart = function() {
 };
 
 Shop.prototype.voucherHasBeenUsed = function() {
-  var result = this.showVouchers().filter(function(product){
-    return product.getQuantity() === 0;
+  var result = this.showVouchers().filter(function(voucher){
+    return voucher.getQuantity() === 0;
   });
   return result.length > 0;
 };

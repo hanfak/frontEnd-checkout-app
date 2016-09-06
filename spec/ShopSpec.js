@@ -2,18 +2,22 @@ describe("Shop", function() {
   var shop, stockList, product1, product2, product3, product4, products;
 
   beforeEach(function() {
-    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
-    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
-    product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
-    product4 = jasmine.createSpyObj('product4', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
+    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory', 'getQuantity']);
+    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory', 'getQuantity']);
+    product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory', 'getQuantity']);
+    product4 = jasmine.createSpyObj('product4', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory', 'getQuantity']);
     product1.getPrice.and.returnValue("99.00");
     product1.getCategory.and.returnValue("Women’s Footwear");
+    product1.getQuantity.and.returnValue(10);
     product2.getPrice.and.returnValue("39.99");
     product2.getCategory.and.returnValue("Men’s Casualwear");
+    product2.getQuantity.and.returnValue(5);
     product3.getPrice.and.returnValue("175.50");
     product3.getCategory.and.returnValue("Men’s Formalwear");
+    product3.getQuantity.and.returnValue(3);
     product4.getPrice.and.returnValue("19.00");
     product4.getCategory.and.returnValue("Men’s Footwear");
+    product4.getQuantity.and.returnValue(9);
 
     stockList = jasmine.createSpyObj('stockList', ['createProducts', 'getStock']);
     products = [product1, product2, product3];
@@ -85,6 +89,13 @@ describe("Shop", function() {
   });
 
   describe("#addToCart",function(){
+    beforeEach(function(){
+      product5 = jasmine.createSpyObj('product5', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory', 'getQuantity']);
+      product5.getPrice.and.returnValue("129.00");
+      product5.getCategory.and.returnValue("Men’s Footwear");
+      product5.getQuantity.and.returnValue(0);
+    });
+
     it("calls decreaseStock", function() {
       shop.addToCart(product1);
 
@@ -95,6 +106,24 @@ describe("Shop", function() {
       shop.addToCart(product1);
 
       expect(shop.showCart()).toEqual([product1]);
+    });
+
+    it("does not add product to the cart if out of stock", function() {
+      try{
+        shop.addToCart(product5);
+      }
+      catch(e){
+
+      }
+      expect(shop.showCart()).toEqual([]);
+    });
+
+    it("does not add product to the cart if out of stock", function() {
+      result = function() {
+        shop.addToCart(product5);
+      };
+
+      expect(result).toThrowError('Cannot add to cart: Product is out of stock');
     });
   });
 

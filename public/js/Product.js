@@ -12,6 +12,13 @@ Product.prototype.getPrice = function() {
   return this.price;
 };
 
+Product.prototype.getName = function() {
+  return this.name;
+};
+
+Product.prototype.getCategory = function() {
+  return this.category;
+};
 
 Product.prototype.decreaseStock = function() {
   this.quantity--;

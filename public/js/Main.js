@@ -1,32 +1,33 @@
 var shop = new Shop(new StockList(), new PromoRules());
 
 document.addEventListener("DOMContentLoaded", function() {
-  _printItemsAndTotal();
+  _printItemsVouchersAndTotal();
 });
 
 function addProduct(index) {
   _clearProductsAndCart();
   product = shop.showStock()[index];
   shop.addToCart(product);
-  _printItemsAndTotal();
+  _printItemsVouchersAndTotal();
 }
 
 function addVoucher(index) {
   _clearProductsAndCart();
-  product = shop.showVouchers()[index];
-  shop.applyVoucherAndAddToCart(product);
-  _printItemsAndTotal();
+  voucher = shop.showVouchers()[index];
+  shop.applyVoucherAndAddToCart(voucher);
+  _printItemsVouchersAndTotal();
 }
 
 function removeProduct(index) {
   _clearProductsAndCart();
   product = shop.showCart()[index];
   shop.removeFromCart(product);
-  _printItemsAndTotal();
+  _printItemsVouchersAndTotal();
 }
 
 // Private methods
-function _printItemsAndTotal(){
+
+function _printItemsVouchersAndTotal(){
   _totalOfCart();
   _printStockItems();
   _printShoppingCartItems();

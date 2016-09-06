@@ -1,21 +1,39 @@
 describe("Shop", function() {
-  var shop, stockList, product1, product2, product3, products;
+  var shop, stockList, product1, product2, product3, product4, products;
 
   beforeEach(function() {
-    // addd getCategory method
-    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice']);
-    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice']);
-    product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice']);
-    products = [product1, product2, product3];
+    product1 = jasmine.createSpyObj('product1', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
+    product2 = jasmine.createSpyObj('product2', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
+    product3 = jasmine.createSpyObj('product3', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
+    product4 = jasmine.createSpyObj('product4', ['decreaseStock', 'increaseStock', 'getPrice', 'getCategory']);
     product1.getPrice.and.returnValue("99.00");
+    product1.getCategory.and.returnValue("Women’s Footwear");
     product2.getPrice.and.returnValue("39.99");
+    product2.getCategory.and.returnValue("Men’s Casualwear");
     product3.getPrice.and.returnValue("175.50");
+    product3.getCategory.and.returnValue("Men’s Formalwear");
+    product4.getPrice.and.returnValue("19.00");
+    product4.getCategory.and.returnValue("Men’s Footwear");
 
     stockList = jasmine.createSpyObj('stockList', ['createProducts', 'getStock']);
+    products = [product1, product2, product3];
     stockList.createProducts.and.returnValue(products);
     stockList.getStock.and.returnValue(products);
 
-    shop = new Shop(stockList);
+    promoRules = jasmine.createSpyObj('promoRules', ['getVouchers']);
+    voucher1 = jasmine.createSpyObj('voucher1', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
+    voucher2 = jasmine.createSpyObj('voucher2', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
+    voucher3 = jasmine.createSpyObj('voucher3', ['decreaseStock', 'increaseStock', 'getPrice', 'getName']);
+    voucher1.getPrice.and.returnValue("-5.00");
+    voucher1.getName.and.returnValue("voucher1");
+    voucher2.getPrice.and.returnValue("-10.00");
+    voucher2.getName.and.returnValue("voucher2");
+    voucher3.getPrice.and.returnValue("-15.00");
+    voucher3.getName.and.returnValue("voucher3");
+
+    promoRules.getVouchers.and.returnValue([voucher1, voucher2, voucher3]);
+
+    shop = new Shop(stockList, promoRules);
   });
 
   it("calls createProducts to create list of products", function() {
@@ -41,9 +59,16 @@ describe("Shop", function() {
   });
 
   describe("#showVouchers",function(){
-    // calls getVouchers()
+    it('calls getVouchers when asking for list of vouchers', function(){
+      shop.showVouchers();
+      expect(promoRules.getVouchers).toHaveBeenCalled();
+    });
 
-    // returns list of vouchers as products
+    it('returns a list of vouchers', function(){
+      expect(shop.showVouchers()[0].getPrice()).toEqual("-5.00");
+      expect(shop.showVouchers()[1].getPrice()).toEqual("-10.00");
+      expect(shop.showVouchers()[2].getPrice()).toEqual("-15.00");
+    });
   });
 
   describe("#addToCart",function(){
@@ -92,6 +117,16 @@ describe("Shop", function() {
 
       expect(shop.showCart()).toEqual([product2]);
     });
+
+    it("removes voucher from the cart", function() {
+      shop.addToCart(product1);
+      shop.applyVoucherAndAddToCart(voucher2);
+
+      shop.removeFromCart(voucher2);
+
+      expect(shop.showCart()).toEqual([product1]);
+    });
+
   });
 
   describe("#totalOfCart",function(){
@@ -121,16 +156,65 @@ describe("Shop", function() {
       expect(shop.totalOfCart()).toEqual('215.49');
     });
 
-    // test voucher 1 works
-    // test voucehr 2 works
-    // test voucher 3 works
-    // test multiple vouchers are discounted
-
   });
 
-  descritbe("#applyVoucher", function(){
-    // test voucher is stored in cart
+  describe('#applyVoucherAndAddToCart', function(){
+    describe("voucher1", function(){
+      it('returns correct total after using voucher1', function(){
+        shop.addToCart(product1);
+        shop.applyVoucherAndAddToCart(voucher1);
 
-    // test multiple vouchers are stored in cart
+        expect(shop.totalOfCart()).toEqual('94.00');
+      });
+    });
+
+    describe("voucher2", function(){
+      it('returns correct total', function(){
+        shop.addToCart(product1);
+        shop.applyVoucherAndAddToCart(voucher2);
+
+        expect(shop.totalOfCart()).toEqual('89.00');
+      });
+
+      it('does not apply', function(){
+        shop.addToCart(product4);
+        shop.applyVoucherAndAddToCart(voucher2);
+
+        expect(shop.totalOfCart()).toEqual('19.00');
+      });
+    });
+
+
+    describe("voucher3", function(){
+      it('returns correct total', function(){
+        shop.addToCart(product1);
+        shop.applyVoucherAndAddToCart(voucher3);
+
+        expect(shop.totalOfCart()).toEqual('84.00');
+      });
+
+      it('deos not apply if under £75 and shoes included', function(){
+        shop.addToCart(product4);
+        shop.applyVoucherAndAddToCart(voucher3);
+
+        expect(shop.totalOfCart()).toEqual('19.00');
+      });
+
+      it('deos not apply if over £75 and no shoes included', function(){
+        shop.addToCart(product3);
+        shop.applyVoucherAndAddToCart(voucher3);
+
+        expect(shop.totalOfCart()).toEqual('175.50');
+      });
+
+      it('deos not apply if no shoes and under £75', function(){
+        shop.addToCart(product4);
+        shop.addToCart(product2);
+        shop.applyVoucherAndAddToCart(voucher3);
+
+        expect(shop.totalOfCart()).toEqual('58.99');
+      });
+    });
+
   });
 });

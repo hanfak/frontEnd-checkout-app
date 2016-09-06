@@ -9,6 +9,3 @@ function PromoRules() {
 PromoRules.prototype.getVouchers= function() {
   return this.voucherList;
 };
-
-// voucherIsValid?
-// Maybe create a new object for testing rules and sending the right voucher to add

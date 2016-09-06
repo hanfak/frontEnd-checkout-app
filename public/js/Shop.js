@@ -47,19 +47,20 @@ Shop.prototype.applyVoucherAndAddToCart = function(voucher) {
 };
 
 Shop.prototype.totalOfCart = function() {
-  var sum = this.showCart().reduce(addPrice, 0);
-
-  function addPrice(a , b) {
-    return a +  parseFloat(b.getPrice());
-  }
-
+  var sum = this.showCart().reduce(this._addPrice, 0);
   return sum.toFixed(2);
+};
+
+//PRIVATE METHODS
+
+Shop.prototype._addPrice = function(a, b) {
+  return  a +  parseFloat(b.getPrice());
 };
 
 Shop.prototype._checkShoes = function() {
   var numberOfItems = this.cart.length;
   for (var i = 0; i < numberOfItems; i++) {
-    if (this.cart[i].category.indexOf("Footwear") > -1) {
+    if (this.cart[i].getCategory().indexOf("Footwear") > -1) {
       return true;
     }
   }
@@ -67,11 +68,13 @@ Shop.prototype._checkShoes = function() {
 };
 
 Shop.prototype._checkforVoucher1 = function(voucher) {
-  return voucher.name === 'voucher1' && parseFloat(this.totalOfCart()) > 25.0;
+  return voucher.getName() === 'voucher1';
 };
+
 Shop.prototype._checkforVoucher2 = function(voucher) {
-  return voucher.name === 'voucher2' && parseFloat(this.totalOfCart()) > 50.0;
+  return voucher.getName() === 'voucher2' && parseFloat(this.totalOfCart()) > 50.0;
 };
+
 Shop.prototype._checkforVoucher3 = function(voucher) {
-  return voucher.name === 'voucher3' && parseFloat(this.totalOfCart()) > 75.0 && this._checkShoes();
+  return voucher.getName() === 'voucher3' && parseFloat(this.totalOfCart()) > 75.0 && this._checkShoes();
 };

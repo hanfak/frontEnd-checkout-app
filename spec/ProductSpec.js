@@ -31,7 +31,17 @@ describe("Product", function() {
     });
   });
 
+  describe('#getName', function(){
+    it('returns the name of product', function() {
+      expect(product.getName()).toEqual("Almond Toe Court Shoes");
+    });
+  });
 
+  describe('#getName', function(){
+    it('returns the category of product', function() {
+      expect(product.getCategory()).toEqual("Women’s Footwear");
+    });
+  });
   describe('#decreaseStock', function(){
     it('decreases the amount of product has in stock', function() {
       product.decreaseStock();
